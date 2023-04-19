@@ -1,0 +1,10 @@
+spring.datasource.url: jdbc:h2:file:./camunda-h2-database
+
+camunda.bpm.admin-user:
+  id: demo
+  password: demo
+
+
+spring.data.mongodb:
+  uri: mongodb://admin_user:admin_pass@172.26.14.7:27017/admin
+  database: dev

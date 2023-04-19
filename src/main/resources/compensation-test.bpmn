@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.9.0">
+  <bpmn:process id="compensation-test" name="compensation-test" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Start Point">
+      <bpmn:outgoing>SequenceFlow_12ogyr3</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="ServiceTask_1jms715" name="Atividade A" camunda:class="com.baeldung.camunda.task.compensation.ActivityA">
+      <bpmn:incoming>SequenceFlow_12ogyr3</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1dtzs9a</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_12ogyr3" sourceRef="StartEvent_1" targetRef="ServiceTask_1jms715" />
+    <bpmn:sequenceFlow id="SequenceFlow_1dtzs9a" sourceRef="ServiceTask_1jms715" targetRef="ServiceTask_191eech" />
+    <bpmn:endEvent id="EndEvent_1ejuafx" name="End Point">
+      <bpmn:incoming>SequenceFlow_0q7v95y</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1vsb4wi</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="BoundaryEvent_13td8ov" attachedToRef="ServiceTask_191eech">
+      <bpmn:outgoing>SequenceFlow_129zbpe</bpmn:outgoing>
+      <bpmn:errorEventDefinition />
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="BoundaryEvent_0rndehb" attachedToRef="ServiceTask_1jms715">
+      <bpmn:outgoing>SequenceFlow_0pknx8e</bpmn:outgoing>
+      <bpmn:errorEventDefinition />
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="ServiceTask_191eech" name="Atividade que irá gerar o erro" camunda:class="com.baeldung.camunda.task.compensation.ErrorActivity">
+      <bpmn:incoming>SequenceFlow_1dtzs9a</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0q7v95y</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0q7v95y" sourceRef="ServiceTask_191eech" targetRef="EndEvent_1ejuafx" />
+    <bpmn:sequenceFlow id="SequenceFlow_129zbpe" sourceRef="BoundaryEvent_13td8ov" targetRef="IntermediateThrowEvent_0gbv1xo" />
+    <bpmn:sequenceFlow id="SequenceFlow_1vsb4wi" sourceRef="IntermediateThrowEvent_0gbv1xo" targetRef="EndEvent_1ejuafx" />
+    <bpmn:intermediateThrowEvent id="IntermediateThrowEvent_0gbv1xo">
+      <bpmn:incoming>SequenceFlow_129zbpe</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0pknx8e</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1vsb4wi</bpmn:outgoing>
+      <bpmn:compensateEventDefinition />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0pknx8e" sourceRef="BoundaryEvent_0rndehb" targetRef="IntermediateThrowEvent_0gbv1xo" />
+    <bpmn:boundaryEvent id="BoundaryEvent_1l92trw" attachedToRef="ServiceTask_1jms715">
+      <bpmn:compensateEventDefinition />
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="ServiceTask_1pmnp1e" name="Atividade de rollback" isForCompensation="true" camunda:class="com.baeldung.camunda.task.compensation.RollbackActivityA" />
+    <bpmn:association id="Association_05csfcp" associationDirection="One" sourceRef="BoundaryEvent_1l92trw" targetRef="ServiceTask_1pmnp1e" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="compensation-test">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="164" y="235" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="156" y="271" width="53" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1jms715_di" bpmnElement="ServiceTask_1jms715">
+        <dc:Bounds x="307" y="213" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1ejuafx_di" bpmnElement="EndEvent_1ejuafx">
+        <dc:Bounds x="909" y="235" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="903" y="214" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1pmnp1e_di" bpmnElement="ServiceTask_1pmnp1e">
+        <dc:Bounds x="305" y="78" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_191eech_di" bpmnElement="ServiceTask_191eech">
+        <dc:Bounds x="650" y="213" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="IntermediateThrowEvent_0gbv1xo_di" bpmnElement="IntermediateThrowEvent_0gbv1xo">
+        <dc:Bounds x="682" y="441" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1090" y="547" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_05csfcp_di" bpmnElement="Association_05csfcp">
+        <di:waypoint x="355" y="195" />
+        <di:waypoint x="355" y="158" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BoundaryEvent_1l92trw_di" bpmnElement="BoundaryEvent_1l92trw">
+        <dc:Bounds x="337" y="195" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="590" y="301" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BoundaryEvent_0rndehb_di" bpmnElement="BoundaryEvent_0rndehb">
+        <dc:Bounds x="335" y="275" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="588" y="381" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BoundaryEvent_13td8ov_di" bpmnElement="BoundaryEvent_13td8ov">
+        <dc:Bounds x="682" y="275" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1017" y="381" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_12ogyr3_di" bpmnElement="SequenceFlow_12ogyr3">
+        <di:waypoint x="200" y="253" />
+        <di:waypoint x="307" y="253" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="443" y="298" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1dtzs9a_di" bpmnElement="SequenceFlow_1dtzs9a">
+        <di:waypoint x="407" y="253" />
+        <di:waypoint x="650" y="253" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="707.5" y="298" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0q7v95y_di" bpmnElement="SequenceFlow_0q7v95y">
+        <di:waypoint x="750" y="253" />
+        <di:waypoint x="909" y="253" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1105.5" y="298" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1vsb4wi_di" bpmnElement="SequenceFlow_1vsb4wi">
+        <di:waypoint x="718" y="459" />
+        <di:waypoint x="927" y="459" />
+        <di:waypoint x="927" y="271" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1128.5" y="501" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_129zbpe_di" bpmnElement="SequenceFlow_129zbpe">
+        <di:waypoint x="700" y="311" />
+        <di:waypoint x="700" y="441" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1089.5" y="502" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0pknx8e_di" bpmnElement="SequenceFlow_0pknx8e">
+        <di:waypoint x="353" y="311" />
+        <di:waypoint x="353" y="459" />
+        <di:waypoint x="682" y="459" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="603" y="445" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
